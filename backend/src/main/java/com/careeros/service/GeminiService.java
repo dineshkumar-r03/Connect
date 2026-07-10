@@ -151,23 +151,8 @@ public class GeminiService {
     }
 
     private String getApiKey() {
-        if (configuredApiKey != null && !configuredApiKey.trim().isEmpty()) {
-            return configuredApiKey;
-        }
-        try {
-            Properties props = new Properties();
-            try (var is = getClass().getClassLoader().getResourceAsStream("application.properties")) {
-                if (is != null) {
-                    props.load(is);
-                    String key = props.getProperty("gemini.api.key");
-                    if (key != null && !key.trim().isEmpty()) {
-                        log.info("Successfully loaded gemini.api.key manually from application.properties");
-                        return key.trim();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.error("Failed to load application.properties manually", e);
+        if (configuredApiKey != null && !configuredApiKey.trim().isEmpty() && !configuredApiKey.contains("${")) {
+            return configuredApiKey.trim();
         }
         return System.getenv("GEMINI_API_KEY");
     }
